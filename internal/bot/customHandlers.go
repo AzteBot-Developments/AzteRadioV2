@@ -77,6 +77,8 @@ func (b *Bot) onGuildCreate(_ *discordgo.Session, event *discordgo.GuildCreate) 
 
 	go b.RegisterCommandsForGuild(event.ID)
 
+	fmt.Println(runtime.AzteradioConfigurationRepository != nil)
+
 	if runtime.AzteradioConfigurationRepository != nil {
 		// HACK Aug 2024: It seems that GuildCreate fires everytime onReady too ???? a bit strange...
 		fmt.Printf("Retrieving cfg\n")
