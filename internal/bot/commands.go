@@ -57,13 +57,9 @@ func (b *Bot) RegisterCommands() {
 				go b.Session.ApplicationCommandBulkOverwrite(b.Session.State.User.ID, config.GuildId, Commands)
 			}
 		} else {
-			if _, err := b.Session.ApplicationCommandBulkOverwrite(b.Session.State.User.ID, DefaultGuildId, Commands); err != nil {
-				panic(err)
-			}
+			go b.Session.ApplicationCommandBulkOverwrite(b.Session.State.User.ID, DefaultGuildId, Commands)
 		}
 	} else {
-		if _, err := b.Session.ApplicationCommandBulkOverwrite(b.Session.State.User.ID, DefaultGuildId, Commands); err != nil {
-			panic(err)
-		}
+		go b.Session.ApplicationCommandBulkOverwrite(b.Session.State.User.ID, DefaultGuildId, Commands)
 	}
 }
