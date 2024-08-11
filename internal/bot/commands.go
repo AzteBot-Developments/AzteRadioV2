@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/AzteBot-Developments/AzteMusic/internal/runtime"
 	"github.com/bwmarrin/discordgo"
 )
@@ -10,7 +8,7 @@ import (
 var Commands = []*discordgo.ApplicationCommand{
 	{
 		Name:        "help",
-		Description: fmt.Sprintf("Returns a slash commands guide for the %s", BotName),
+		Description: "Returns a guide for the slash commands of the AzteRadio",
 	},
 	{
 		Name:        "now-playing",
@@ -18,7 +16,7 @@ var Commands = []*discordgo.ApplicationCommand{
 	},
 	{
 		Name:        "queue",
-		Description: "Shows the current queue",
+		Description: "Shows the current queue of the AzteRadio",
 	},
 	// CONFIGURATION COMMANDS
 	{
