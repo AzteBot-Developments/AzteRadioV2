@@ -14,7 +14,7 @@ services:
   lavalink:
     container_name: lavalink
     build:
-      dockerfile: ./cmd/lavalink-service/Dockerfile
+      dockerfile: ./internal/lavalink/Dockerfile
     restart: unless-stopped
     networks:
       - default
