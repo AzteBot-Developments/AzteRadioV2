@@ -132,7 +132,7 @@ func (b *Bot) help(event *discordgo.InteractionCreate, data discordgo.Applicatio
 				} else {
 					required = "optional"
 				}
-				title += fmt.Sprintf(" `[%s (%s) - %s]`", param.Name, required, param.Description)
+				title += fmt.Sprintf(" `[%s (%s)]`", param.Name, required)
 			}
 		}
 
