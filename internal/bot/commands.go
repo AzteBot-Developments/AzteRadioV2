@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/AzteBot-Developments/AzteMusic/internal/runtime"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -47,8 +46,8 @@ func (b *Bot) RegisterCommands() {
 		"radio-rm-cfg":  b.handleSlashRemoveRadioConfig,
 	}
 
-	if runtime.AzteradioConfigurationRepository != nil {
-		configs, _ := runtime.AzteradioConfigurationRepository.GetAll()
+	if AzteradioConfigurationRepository != nil {
+		configs, _ := AzteradioConfigurationRepository.GetAll()
 		if len(configs) != 0 {
 			for _, config := range configs {
 				// if _, err := b.Session.ApplicationCommandBulkOverwrite(b.Session.State.User.ID, config.GuildId, Commands); err != nil {

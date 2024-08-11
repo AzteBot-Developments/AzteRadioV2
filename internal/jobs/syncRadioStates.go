@@ -6,13 +6,13 @@ import (
 	"time"
 
 	"github.com/AzteBot-Developments/AzteMusic/internal/data/models/dax"
-	"github.com/AzteBot-Developments/AzteMusic/internal/runtime"
+	"github.com/AzteBot-Developments/AzteMusic/internal/data/repositories"
 	"github.com/AzteBot-Developments/AzteMusic/pkg/shared"
 	"github.com/bwmarrin/discordgo"
 	"github.com/disgoorg/disgolink/v3/disgolink"
 )
 
-func ProcessSyncRadioStates(s *discordgo.Session, client disgolink.Client, queues *shared.QueueManager, sFrequency int, repeatPlaylistCount int, defaultDesignatedPlaylistUrl string) {
+func ProcessSyncRadioStates(repo repositories.AzteradioConfigurationsDataRepository, s *discordgo.Session, client disgolink.Client, queues *shared.QueueManager, sFrequency int, repeatPlaylistCount int, defaultDesignatedPlaylistUrl string) {
 
 	fmt.Println("[CRON] Starting Task ProcessSyncRadioStates() at", time.Now(), "running every", sFrequency, "seconds")
 
@@ -22,7 +22,7 @@ func ProcessSyncRadioStates(s *discordgo.Session, client disgolink.Client, queue
 		for {
 			select {
 			case <-ticker.C:
-				go syncRadioStates(s, client, queues, repeatPlaylistCount, defaultDesignatedPlaylistUrl)
+				go syncRadioStates(repo, s, client, queues, repeatPlaylistCount, defaultDesignatedPlaylistUrl)
 			case <-quit:
 				ticker.Stop()
 				return
@@ -32,11 +32,11 @@ func ProcessSyncRadioStates(s *discordgo.Session, client disgolink.Client, queue
 
 }
 
-func syncRadioStates(s *discordgo.Session, client disgolink.Client, queues *shared.QueueManager, repeatPlaylistCount int, defaultDesignatedPlaylistUrl string) {
-	if runtime.AzteradioConfigurationRepository != nil {
+func syncRadioStates(repo repositories.AzteradioConfigurationsDataRepository, s *discordgo.Session, client disgolink.Client, queues *shared.QueueManager, repeatPlaylistCount int, defaultDesignatedPlaylistUrl string) {
+	if repo != nil {
 		var configs []dax.AzteradioConfiguration
 		var err error
-		configs, err = runtime.AzteradioConfigurationRepository.GetAll()
+		configs, err = repo.GetAll()
 		if err != nil {
 			log.Fatalf("Could not retrieve radio configs for guilds: %v", err)
 		}

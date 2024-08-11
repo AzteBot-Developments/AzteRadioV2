@@ -20,6 +20,7 @@ type AzteradioConfigurationRepository struct {
 func NewAzteradioConfigurationRepository(connString string) *AzteradioConfigurationRepository {
 
 	if connString == "" {
+		fmt.Println("Can't create a repository with an empty connection string")
 		return nil
 	}
 

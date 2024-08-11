@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/AzteBot-Developments/AzteMusic/internal/data/repositories"
 	"github.com/joho/godotenv"
 )
 
@@ -28,6 +29,10 @@ var (
 
 	DefaultDesignatedPlaylistUrl = os.Getenv("DESIGNATED_PLAYLIST_URL")
 	StatusText                   = os.Getenv("STATUS_TEXT")
+
+	MySqlAztebotRootConnectionString = os.Getenv("DB_AZTEBOT_ROOT_CONNSTRING")
+
+	AzteradioConfigurationRepository = repositories.NewAzteradioConfigurationRepository(MySqlAztebotRootConnectionString)
 
 	b = NewBot()
 )

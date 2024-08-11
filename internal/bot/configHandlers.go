@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/AzteBot-Developments/AzteMusic/internal/data/models/dax"
-	"github.com/AzteBot-Developments/AzteMusic/internal/runtime"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -12,13 +11,13 @@ import (
 
 func (b *Bot) handleSlashSetRadioConfig(i *discordgo.InteractionCreate, data discordgo.ApplicationCommandInteractionData) error {
 
-	if runtime.AzteradioConfigurationRepository != nil {
+	if AzteradioConfigurationRepository != nil {
 
 		designatedRadioChannel := data.Options[0].ChannelValue(b.Session)
 
-		cfg, _ := runtime.AzteradioConfigurationRepository.GetConfiguration(i.GuildID)
+		cfg, _ := AzteradioConfigurationRepository.GetConfiguration(i.GuildID)
 		if cfg == nil {
-			err := runtime.AzteradioConfigurationRepository.SaveConfiguration(dax.AzteradioConfiguration{
+			err := AzteradioConfigurationRepository.SaveConfiguration(dax.AzteradioConfiguration{
 				GuildId:               i.GuildID,
 				DefaultRadioChannelId: designatedRadioChannel.ID,
 			})
@@ -43,7 +42,7 @@ func (b *Bot) handleSlashSetRadioConfig(i *discordgo.InteractionCreate, data dis
 			})
 		}
 
-		err := runtime.AzteradioConfigurationRepository.UpdateConfiguration(dax.AzteradioConfiguration{
+		err := AzteradioConfigurationRepository.UpdateConfiguration(dax.AzteradioConfiguration{
 			GuildId:               i.GuildID,
 			DefaultRadioChannelId: designatedRadioChannel.ID,
 		})
@@ -79,8 +78,8 @@ func (b *Bot) handleSlashSetRadioConfig(i *discordgo.InteractionCreate, data dis
 
 func (b *Bot) handleSlashRemoveRadioConfig(i *discordgo.InteractionCreate, _ discordgo.ApplicationCommandInteractionData) error {
 
-	if runtime.AzteradioConfigurationRepository != nil {
-		err := runtime.AzteradioConfigurationRepository.RemoveConfiguration(i.GuildID)
+	if AzteradioConfigurationRepository != nil {
+		err := AzteradioConfigurationRepository.RemoveConfiguration(i.GuildID)
 		if err != nil {
 			fmt.Printf("An error ocurred while removing the configuration for guild %s: %v\n", i.GuildID, err)
 			return b.Session.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{

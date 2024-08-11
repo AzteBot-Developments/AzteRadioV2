@@ -9,7 +9,6 @@ import (
 
 	"github.com/AzteBot-Developments/AzteMusic/internal/data/models/dax"
 	"github.com/AzteBot-Developments/AzteMusic/internal/jobs"
-	"github.com/AzteBot-Developments/AzteMusic/internal/runtime"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -68,7 +67,7 @@ func (b *Bot) onReady(s *discordgo.Session, event *discordgo.Ready) {
 	}
 
 	// BACKGROUND JOBS
-	go jobs.ProcessSyncRadioStates(s, b.Lavalink, b.Queues, syncRadioStatesFrequency, repeatPlaylistCount, DefaultDesignatedPlaylistUrl)
+	go jobs.ProcessSyncRadioStates(AzteradioConfigurationRepository, s, b.Lavalink, b.Queues, syncRadioStatesFrequency, repeatPlaylistCount, DefaultDesignatedPlaylistUrl)
 }
 
 func (b *Bot) onGuildCreate(_ *discordgo.Session, event *discordgo.GuildCreate) {
@@ -77,16 +76,13 @@ func (b *Bot) onGuildCreate(_ *discordgo.Session, event *discordgo.GuildCreate) 
 
 	go b.RegisterCommandsForGuild(event.ID)
 
-	fmt.Println(runtime.AzteradioConfigurationRepository != nil)
-
-	if runtime.AzteradioConfigurationRepository != nil {
+	if AzteradioConfigurationRepository != nil {
 		// HACK Aug 2024: It seems that GuildCreate fires everytime onReady too ???? a bit strange...
-		fmt.Printf("Retrieving cfg\n")
-		cfg, err := runtime.AzteradioConfigurationRepository.GetConfiguration(event.ID)
+		cfg, err := AzteradioConfigurationRepository.GetConfiguration(event.ID)
 		if cfg == nil {
 			if err == sql.ErrNoRows {
 				fmt.Printf("Adding new radio cfg for guild %s\n", event.ID)
-				err := runtime.AzteradioConfigurationRepository.SaveConfiguration(dax.AzteradioConfiguration{
+				err := AzteradioConfigurationRepository.SaveConfiguration(dax.AzteradioConfiguration{
 					GuildId:               event.ID,
 					DefaultRadioChannelId: "",
 				})
@@ -101,8 +97,8 @@ func (b *Bot) onGuildCreate(_ *discordgo.Session, event *discordgo.GuildCreate) 
 }
 
 func (b *Bot) onGuildDelete(_ *discordgo.Session, event *discordgo.GuildDelete) {
-	if runtime.AzteradioConfigurationRepository != nil {
-		err := runtime.AzteradioConfigurationRepository.RemoveConfiguration(event.ID)
+	if AzteradioConfigurationRepository != nil {
+		err := AzteradioConfigurationRepository.RemoveConfiguration(event.ID)
 		if err != nil {
 			fmt.Printf("An error ocurred while removing the configuration for guild %s: %v\n", event.ID, err)
 		}
