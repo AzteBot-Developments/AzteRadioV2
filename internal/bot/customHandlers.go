@@ -18,6 +18,7 @@ func (b *Bot) onReady(s *discordgo.Session, event *discordgo.Ready) {
 	// Params
 	const repeatPlaylistCount int = 3
 	const syncRadioStatesFrequency int = 10
+	const shufflePlaylistForEachPlayer bool = false
 
 	// Initial lavalink setup unless it was setup already
 	if !b.HasLavaLinkClient {
@@ -43,7 +44,7 @@ func (b *Bot) onReady(s *discordgo.Session, event *discordgo.Ready) {
 
 		// Play designated playlist on loop, FOREVER :')
 		if DefaultDesignatedPlaylistUrl != "" {
-			go b.PlayOnStartupFromSource(DefaultGuildId, DefaultDesignatedChannelId, event, DefaultDesignatedChannelId, repeatPlaylistCount)
+			go b.PlayOnStartupFromSource(DefaultGuildId, DefaultDesignatedChannelId, event, DefaultDesignatedChannelId, repeatPlaylistCount, shufflePlaylistForEachPlayer)
 		}
 
 		// Also run a cron to check whether there is anything playing - if there isn't, shuffle and play the designated playlist
@@ -56,7 +57,7 @@ func (b *Bot) onReady(s *discordgo.Session, event *discordgo.Ready) {
 				case <-ticker.C:
 					serverQueue := b.Queues.Get(DefaultGuildId)
 					if len(serverQueue.Tracks) == 0 || !ServiceIsPlayingTrack(b, DefaultGuildId) {
-						go b.PlayOnStartupFromSource(DefaultGuildId, DefaultDesignatedChannelId, event, DefaultDesignatedPlaylistUrl, repeatPlaylistCount)
+						go b.PlayOnStartupFromSource(DefaultGuildId, DefaultDesignatedChannelId, event, DefaultDesignatedPlaylistUrl, repeatPlaylistCount, shufflePlaylistForEachPlayer)
 					}
 				case <-quit:
 					ticker.Stop()
