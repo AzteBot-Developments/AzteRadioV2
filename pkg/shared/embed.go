@@ -58,6 +58,17 @@ func (e *Embed) AddField(name, value string, inline bool) *Embed {
 
 }
 
+// AddLineBreakField
+func (e *Embed) AddLineBreakField() *Embed {
+	e.Fields = append(e.Fields, &discordgo.MessageEmbedField{
+		Name:   "\u200B",
+		Value:  "",
+		Inline: false,
+	})
+
+	return e
+}
+
 // SetFooter [Text] [iconURL]
 func (e *Embed) SetFooter(args ...string) *Embed {
 	iconURL := ""

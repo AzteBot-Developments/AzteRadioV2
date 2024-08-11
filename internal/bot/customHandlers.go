@@ -81,7 +81,6 @@ func (b *Bot) onGuildCreate(_ *discordgo.Session, event *discordgo.GuildCreate) 
 		cfg, err := AzteradioConfigurationRepository.GetConfiguration(event.ID)
 		if cfg == nil {
 			if err == sql.ErrNoRows {
-				fmt.Printf("Adding new radio cfg for guild %s\n", event.ID)
 				err := AzteradioConfigurationRepository.SaveConfiguration(dax.AzteradioConfiguration{
 					GuildId:               event.ID,
 					DefaultRadioChannelId: "",

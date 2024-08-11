@@ -139,6 +139,9 @@ func (b *Bot) help(event *discordgo.InteractionCreate, data discordgo.Applicatio
 		embed.AddField(title, text, false)
 	}
 
+	embed.AddLineBreakField()
+	embed.AddField(fmt.Sprintf("Configuring the `%s`", BotName), "\n\nIn order to configure your bot to automatically play Azteca's Essentials on one of your voice channels, you'll have to run the `/radio-set-cfg` slash command.", false)
+
 	return b.Session.InteractionRespond(event.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
