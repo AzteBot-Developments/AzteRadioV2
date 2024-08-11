@@ -123,7 +123,7 @@ func (b *Bot) PlayOnStartupFromSource(guildId string, channelId string, event *d
 }
 
 // Plays a YT track or playlist from the given source URL for a specific guild.
-func (b *Bot) PlayOnStartupFromSourceForGuild(guildId string, event *discordgo.Ready, designatedChannelId string, url string, repeatCount int) error {
+func (b *Bot) PlayOnStartupFromSourceForGuild(guildId string, event *discordgo.Ready, designatedChannelId string, url string, repeatCount int, shuffle bool) error {
 
 	playlistUrl := url
 
@@ -154,10 +154,16 @@ func (b *Bot) PlayOnStartupFromSourceForGuild(guildId string, event *discordgo.R
 				for i := 0; i < repeatCount; i++ {
 					queue.Add(playlist.Tracks[0:]...)
 				}
-				queue.Shuffle()
+
+				if shuffle {
+					queue.Shuffle()
+				}
 			} else {
 				queue.Add(playlist.Tracks...)
-				queue.Shuffle()
+
+				if shuffle {
+					queue.Shuffle()
+				}
 			}
 		},
 		func(tracks []lavalink.Track) {
