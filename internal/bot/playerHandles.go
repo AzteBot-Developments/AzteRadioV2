@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/AzteBot-Developments/AzteMusic/pkg/shared"
 	"github.com/disgoorg/disgolink/v3/disgolink"
 	"github.com/disgoorg/disgolink/v3/lavalink"
 )
@@ -20,7 +21,7 @@ func (b *Bot) onPlayerResume(player disgolink.Player, event lavalink.PlayerResum
 }
 
 func (b *Bot) onTrackStart(player disgolink.Player, event lavalink.TrackStartEvent) {
-	fmt.Printf("onTrackStart: %v\n", event)
+	fmt.Printf("onTrackStart -> %s | %s\n", event.GuildID().String(), event.Track.Info.Title)
 	b.Session.UpdateGameStatus(0, event.Track.Info.Title)
 }
 
@@ -49,13 +50,13 @@ func (b *Bot) onTrackEnd(player disgolink.Player, event lavalink.TrackEndEvent) 
 		ok        bool
 	)
 	switch queue.Type {
-	case QueueTypeNormal:
+	case shared.QueueTypeNormal:
 		nextTrack, ok = queue.Next()
 
-	case QueueTypeRepeatTrack:
+	case shared.QueueTypeRepeatTrack:
 		nextTrack = event.Track
 
-	case QueueTypeRepeatQueue:
+	case shared.QueueTypeRepeatQueue:
 		queue.Add(event.Track)
 		nextTrack, ok = queue.Next()
 	}

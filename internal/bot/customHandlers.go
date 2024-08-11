@@ -7,12 +7,17 @@ import (
 	"time"
 
 	"github.com/AzteBot-Developments/AzteMusic/internal/data/models/dax"
+	"github.com/AzteBot-Developments/AzteMusic/internal/jobs"
 	"github.com/AzteBot-Developments/AzteMusic/internal/runtime"
 	"github.com/bwmarrin/discordgo"
 )
 
 // Called once the Discord servers confirm a succesful connection.
 func (b *Bot) onReady(s *discordgo.Session, event *discordgo.Ready) {
+
+	// Params
+	const repeatPlaylistCount int = 3
+	const syncRadioStatesFrequency int = 10
 
 	// Initial lavalink setup unless it was setup already
 	if !b.HasLavaLinkClient {
@@ -30,18 +35,6 @@ func (b *Bot) onReady(s *discordgo.Session, event *discordgo.Ready) {
 		s.UpdateGameStatus(0, StatusText)
 	}
 
-	// Join designated channel for all configured servers
-	var configs []dax.AzteradioConfiguration
-	if runtime.AzteradioConfigurationRepository != nil {
-		var err error
-		configs, err = runtime.AzteradioConfigurationRepository.GetAll()
-		if err != nil {
-			log.Fatalf("Could not retrieve radio configs for guilds: %v", err)
-		}
-	}
-
-	repeatPlaylistCount := 3
-
 	// DEFAULT STRATEGY FOR MAIN GUILD (OTA)
 	if DefaultDesignatedChannelId != "" {
 		if err := s.ChannelVoiceJoinManual(DefaultGuildId, DefaultDesignatedChannelId, false, false); err != nil {
@@ -50,9 +43,7 @@ func (b *Bot) onReady(s *discordgo.Session, event *discordgo.Ready) {
 
 		// Play designated playlist on loop, FOREVER :')
 		if DefaultDesignatedPlaylistUrl != "" {
-			if err := b.PlayOnStartupFromSource(DefaultGuildId, DefaultDesignatedChannelId, event, DefaultDesignatedChannelId, repeatPlaylistCount); err != nil {
-				log.Fatalf("Could not play default radio playlist on channel (%s) for guild %s (onReady): %v", DefaultDesignatedChannelId, DefaultGuildId, err)
-			}
+			go b.PlayOnStartupFromSource(DefaultGuildId, DefaultDesignatedChannelId, event, DefaultDesignatedChannelId, repeatPlaylistCount)
 		}
 
 		// Also run a cron to check whether there is anything playing - if there isn't, shuffle and play the designated playlist
@@ -65,9 +56,7 @@ func (b *Bot) onReady(s *discordgo.Session, event *discordgo.Ready) {
 				case <-ticker.C:
 					serverQueue := b.Queues.Get(DefaultGuildId)
 					if len(serverQueue.Tracks) == 0 || !ServiceIsPlayingTrack(b, DefaultGuildId) {
-						if err := b.PlayOnStartupFromSource(DefaultGuildId, DefaultDesignatedChannelId, event, DefaultDesignatedPlaylistUrl, repeatPlaylistCount); err != nil {
-							log.Fatalf("Could not play default radio playlist on channel (%s) for guild %s (onReady CRON): %v", DefaultDesignatedChannelId, DefaultGuildId, err)
-						}
+						go b.PlayOnStartupFromSource(DefaultGuildId, DefaultDesignatedChannelId, event, DefaultDesignatedPlaylistUrl, repeatPlaylistCount)
 					}
 				case <-quit:
 					ticker.Stop()
@@ -77,42 +66,8 @@ func (b *Bot) onReady(s *discordgo.Session, event *discordgo.Ready) {
 		}()
 	}
 
-	// STRATEGY FOR ALL OTHER GUILDS
-	for _, config := range configs {
-		if config.DefaultRadioChannelId != "" {
-			if err := s.ChannelVoiceJoinManual(config.GuildId, config.DefaultRadioChannelId, false, false); err != nil {
-				log.Fatalf("Could not join designated voice channel (%s) for guild %s (onReady): %v", config.DefaultRadioChannelId, config.GuildId, err)
-			}
-
-			// Play designated playlist on loop, FOREVER :')
-			if DefaultDesignatedPlaylistUrl != "" {
-				if err := b.PlayOnStartupFromSourceForGuild(config.GuildId, event, config.DefaultRadioChannelId, DefaultDesignatedPlaylistUrl, repeatPlaylistCount); err != nil {
-					log.Fatalf("Could not play default radio playlist on channel (%s) for guild %s (onReady): %v", config.DefaultRadioChannelId, config.GuildId, err)
-				}
-			}
-
-			// Also run a cron to check whether there is anything playing - if there isn't, shuffle and play the designated playlist
-			var numSec int = 60 * 5
-			ticker := time.NewTicker(time.Duration(numSec) * time.Second)
-			quit := make(chan struct{})
-			go func() {
-				for {
-					select {
-					case <-ticker.C:
-						serverQueue := b.Queues.Get(config.GuildId)
-						if len(serverQueue.Tracks) == 0 || !ServiceIsPlayingTrack(b, config.GuildId) {
-							if err := b.PlayOnStartupFromSourceForGuild(config.GuildId, event, config.DefaultRadioChannelId, DefaultDesignatedPlaylistUrl, repeatPlaylistCount); err != nil {
-								log.Fatalf("Could not play default radio playlist on channel (%s) for guild %s (onReady CRON): %v", config.DefaultRadioChannelId, config.GuildId, err)
-							}
-						}
-					case <-quit:
-						ticker.Stop()
-						return
-					}
-				}
-			}()
-		}
-	}
+	// BACKGROUND JOBS
+	go jobs.ProcessSyncRadioStates(s, b.Lavalink, b.Queues, syncRadioStatesFrequency, repeatPlaylistCount, DefaultDesignatedPlaylistUrl)
 }
 
 func (b *Bot) onGuildCreate(_ *discordgo.Session, event *discordgo.GuildCreate) {

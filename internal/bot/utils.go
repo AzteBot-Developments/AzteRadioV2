@@ -185,3 +185,14 @@ func ServiceIsPlayingTrack(b *Bot, guildId string) bool {
 
 	return track != nil
 }
+
+func ClientPlayerIsPlayingTrack(l disgolink.Client, guildId string) bool {
+	player := l.ExistingPlayer(snowflake.MustParse(guildId))
+	if player == nil {
+		return false
+	}
+
+	track := player.Track()
+
+	return track != nil
+}

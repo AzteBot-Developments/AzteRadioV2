@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/AzteBot-Developments/AzteMusic/pkg/shared"
 	"github.com/bwmarrin/discordgo"
 	"github.com/disgoorg/disgolink/v3/disgolink"
 	"github.com/disgoorg/snowflake/v2"
@@ -10,14 +11,14 @@ type Bot struct {
 	Session           *discordgo.Session
 	Lavalink          disgolink.Client
 	Handlers          map[string]func(event *discordgo.InteractionCreate, data discordgo.ApplicationCommandInteractionData) error
-	Queues            *QueueManager
+	Queues            *shared.QueueManager
 	HasLavaLinkClient bool
 }
 
 func NewBot() *Bot {
 	newBot := &Bot{
-		Queues: &QueueManager{
-			queues: make(map[string]*Queue),
+		Queues: &shared.QueueManager{
+			Queues: make(map[string]*shared.Queue),
 		},
 	}
 	newBot.HasLavaLinkClient = false
