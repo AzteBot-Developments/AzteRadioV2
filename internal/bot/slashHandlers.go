@@ -113,8 +113,8 @@ func formatPosition(position lavalink.Duration) string {
 func (b *Bot) help(event *discordgo.InteractionCreate, data discordgo.ApplicationCommandInteractionData) error {
 
 	embed := shared.NewEmbed().
-		SetTitle(fmt.Sprintf("🎵  `%s` Slash Commands Guide", BotName)).
-		SetDescription(fmt.Sprintf("See below the available slash commands for `%s`.", BotName)).
+		SetTitle(fmt.Sprintf("🎵  `%s` Guide", BotName)).
+		SetDescription(fmt.Sprintf("The AzteRadio is a music app which automatically plays the Azteca Essentials playlist on your Discord server, and all it needs is a voice channel that the bot can join and then it'll sort out the rest!\n\nThe available slash commands for `%s` can be seen below.", BotName)).
 		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetColor(000000)
 

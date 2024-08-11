@@ -20,7 +20,7 @@ var Commands = []*discordgo.ApplicationCommand{
 	// CONFIGURATION COMMANDS
 	{
 		Name:        "radio-set-cfg",
-		Description: "Configures the radio settings of the music bot application for this guild",
+		Description: "Configures the settings of the AzteRadio application for this guild",
 		Options: []*discordgo.ApplicationCommandOption{
 			{
 				Type:        discordgo.ApplicationCommandOptionChannel,
@@ -32,7 +32,11 @@ var Commands = []*discordgo.ApplicationCommand{
 	},
 	{
 		Name:        "radio-rm-cfg",
-		Description: "Remove the radio settings of the music bot application for this guild",
+		Description: "Clear the AzteRadio configurations for this guild",
+	},
+	{
+		Name:        "radio-config",
+		Description: "Displays the current configurations for the AzteRadio",
 	},
 }
 
@@ -42,6 +46,7 @@ func (b *Bot) RegisterCommands() {
 		"queue":       b.queue,
 		"help":        b.help,
 		// CONFIGURATION COMMANDS
+		"radio-config":  b.handleSlashSeeRadioConfig,
 		"radio-set-cfg": b.handleSlashSetRadioConfig,
 		"radio-rm-cfg":  b.handleSlashRemoveRadioConfig,
 	}
