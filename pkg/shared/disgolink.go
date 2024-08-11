@@ -37,7 +37,7 @@ func PlayerCurrentChannelId(l disgolink.Client, guildId string) string {
 	return channelId
 }
 
-func PlayOnStartupFromSourceForGuild(guildId string, session *discordgo.Session, client disgolink.Client, queues *QueueManager, designatedChannelId string, url string, repeatCount int) error {
+func PlayOnStartupFromSourceForGuild(guildId string, session *discordgo.Session, client disgolink.Client, queues *QueueManager, designatedChannelId string, url string, repeatCount int, shuffle bool) error {
 
 	playlistUrl := url
 
@@ -68,10 +68,16 @@ func PlayOnStartupFromSourceForGuild(guildId string, session *discordgo.Session,
 				for i := 0; i < repeatCount; i++ {
 					queue.Add(playlist.Tracks[0:]...)
 				}
-				queue.Shuffle()
+
+				if shuffle {
+					queue.Shuffle()
+				}
 			} else {
 				queue.Add(playlist.Tracks...)
-				queue.Shuffle()
+
+				if shuffle {
+					queue.Shuffle()
+				}
 			}
 		},
 		func(tracks []lavalink.Track) {
