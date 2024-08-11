@@ -15,23 +15,33 @@ func (b *Bot) onPlayerPause(player disgolink.Player, event lavalink.PlayerPauseE
 }
 
 func (b *Bot) onPlayerResume(player disgolink.Player, event lavalink.PlayerResumeEvent) {
-	b.Session.UpdateGameStatus(0, player.Track().Info.Title)
+	b.Session.UpdateGameStatus(0, StatusText)
 }
 
 func (b *Bot) onTrackStart(player disgolink.Player, event lavalink.TrackStartEvent) {
-	fmt.Printf("onTrackStart -> %s | %s\n", event.GuildID().String(), event.Track.Info.Title)
-	b.Session.UpdateGameStatus(0, event.Track.Info.Title)
+	guildId := event.GuildID().String()
+	if guildId == DefaultGuildId {
+		// Only update the status when the main guild player changes state
+		// in order to simulate some kind of "broadcast"
+		// such that the status matches what the current song on the main station is
+		b.Session.UpdateGameStatus(0, event.Track.Info.Title)
+	}
 }
 
 func (b *Bot) onTrackEnd(player disgolink.Player, event lavalink.TrackEndEvent) {
-
-	b.Session.UpdateGameStatus(0, StatusText)
 
 	if !event.Reason.MayStartNext() {
 		return
 	}
 
 	guildId := event.GuildID().String()
+
+	if guildId == DefaultGuildId {
+		// Only update the status when the main guild player changes state
+		// in order to simulate some kind of "broadcast"
+		// such that the status matches what the current song on the main station is
+		b.Session.UpdateGameStatus(0, StatusText)
+	}
 
 	queue := b.Queues.Get(guildId)
 
