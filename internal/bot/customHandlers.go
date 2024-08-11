@@ -73,6 +73,8 @@ func (b *Bot) onReady(s *discordgo.Session, event *discordgo.Ready) {
 
 func (b *Bot) onGuildCreate(_ *discordgo.Session, event *discordgo.GuildCreate) {
 
+	fmt.Printf("Registering radio app for guild %s\n", event.ID)
+
 	go b.RegisterCommandsForGuild(event.ID)
 
 	if runtime.AzteradioConfigurationRepository != nil {
@@ -80,6 +82,7 @@ func (b *Bot) onGuildCreate(_ *discordgo.Session, event *discordgo.GuildCreate) 
 		cfg, err := runtime.AzteradioConfigurationRepository.GetConfiguration(event.ID)
 		if cfg == nil {
 			if err == sql.ErrNoRows {
+				fmt.Printf("Adding new radio cfg for guild %s\n", event.ID)
 				err := runtime.AzteradioConfigurationRepository.SaveConfiguration(dax.AzteradioConfiguration{
 					GuildId:               event.ID,
 					DefaultRadioChannelId: "",
