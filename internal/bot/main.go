@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"regexp"
+	"strings"
 	"syscall"
 	"time"
 
@@ -33,6 +34,8 @@ var (
 	MySqlAztebotRootConnectionString = os.Getenv("DB_AZTEBOT_ROOT_CONNSTRING")
 
 	AzteradioConfigurationRepository = repositories.NewAzteradioConfigurationRepository(MySqlAztebotRootConnectionString)
+
+	RestrictedCommands = strings.Split(os.Getenv("RESTRICTED_COMMANDS"), ",")
 
 	b = NewBot()
 )
