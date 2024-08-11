@@ -64,7 +64,7 @@ func (r AzteradioConfigurationRepository) GetConfiguration(guildId string) (*dax
 		&item.DefaultRadioChannelId)
 
 	if err != nil {
-		return nil, fmt.Errorf("an error ocurred while retrieving config for guild with ID `%s`", guildId)
+		return nil, err
 	}
 
 	return &item, nil

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"time"
@@ -71,16 +72,23 @@ func (b *Bot) onReady(s *discordgo.Session, event *discordgo.Ready) {
 }
 
 func (b *Bot) onGuildCreate(_ *discordgo.Session, event *discordgo.GuildCreate) {
+
+	go b.RegisterCommandsForGuild(event.ID)
+
 	if runtime.AzteradioConfigurationRepository != nil {
 		// HACK Aug 2024: It seems that GuildCreate fires everytime onReady too ???? a bit strange...
 		cfg, err := runtime.AzteradioConfigurationRepository.GetConfiguration(event.ID)
-		if cfg == nil && err != nil {
-			err := runtime.AzteradioConfigurationRepository.SaveConfiguration(dax.AzteradioConfiguration{
-				GuildId:               event.ID,
-				DefaultRadioChannelId: "",
-			})
-			if err != nil {
-				fmt.Printf("An error ocurred while saving the initial configuration for guild %s: %v\n", event.ID, err)
+		if cfg == nil {
+			if err == sql.ErrNoRows {
+				err := runtime.AzteradioConfigurationRepository.SaveConfiguration(dax.AzteradioConfiguration{
+					GuildId:               event.ID,
+					DefaultRadioChannelId: "",
+				})
+				if err != nil {
+					fmt.Printf("An error ocurred while saving the initial configuration for guild %s: %v\n", event.ID, err)
+				}
+			} else {
+				fmt.Printf("An error ocurred while retrieving the radio configuration for guild %s: %v\n", event.ID, err)
 			}
 		}
 	}

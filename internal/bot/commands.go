@@ -63,3 +63,7 @@ func (b *Bot) RegisterCommands() {
 		go b.Session.ApplicationCommandBulkOverwrite(b.Session.State.User.ID, DefaultGuildId, Commands)
 	}
 }
+
+func (b *Bot) RegisterCommandsForGuild(guildId string) {
+	go b.Session.ApplicationCommandBulkOverwrite(b.Session.State.User.ID, guildId, Commands)
+}
