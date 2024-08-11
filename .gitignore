@@ -23,3 +23,14 @@ go.work.sum
 
 # env file
 .env
+
+# Other
+build/
+.env
+application.prod.yml
+application.yml
+.prod.env
+logs/
+application.prod.yml.out
+.prod.env.out
+__backups/

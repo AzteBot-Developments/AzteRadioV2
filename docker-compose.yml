@@ -1,0 +1,37 @@
+services:
+  aztebot-db:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 6oFqJERp8X0V9RGN0lfhu80lqAx940
+      MYSQL_USER: discordbot1
+      MYSQL_DATABASE: aztebotBotDb
+      MYSQL_PASSWORD: b21fCTAkaxI1a20utLhkYsMIB1QING
+    ports:
+      - "3306:3306"
+
+  lavalink:
+    container_name: lavalink
+    build:
+      dockerfile: ./cmd/lavalink-service/Dockerfile
+    restart: unless-stopped
+    networks:
+      - default
+
+  azteradio:
+    container_name: radio-service
+    env_file:
+      ./cmd/radio-service/.env
+    build:
+      dockerfile: ./cmd/radio-service/Dockerfile
+    volumes: 
+      - "./logs/radio-service:/app/logs"
+    networks:
+      - default
+
+networks:
+  default:
+    name: dev_network
+    driver: bridge
+    external: true

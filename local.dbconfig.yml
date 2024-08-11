@@ -1,0 +1,11 @@
+local-aztebot:
+  dialect: mysql
+  datasource: root:6oFqJERp8X0V9RGN0lfhu80lqAx940@tcp(0.0.0.0:3306)/aztebotBotDb?parseTime=true
+  dir: ../Aztebot-Infrastructure/cloud-sql/migrations/history/aztebot
+  table: migrations
+
+test-aztebot:
+  dialect: mysql
+  datasource: root:6oFqJERp8X0V9RGN0lfhu80lqAx940@tcp(aztebot-db:3306)/aztebotBotDb?parseTime=true
+  dir: Infrastructure/cloud-sql/migrations/history/aztebot
+  table: migrations
