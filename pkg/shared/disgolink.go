@@ -26,6 +26,17 @@ func ClientPlayerIsPlayingTrack(l disgolink.Client, guildId string) bool {
 	return track != nil
 }
 
+func PlayerCurrentChannelId(l disgolink.Client, guildId string) string {
+	player := l.ExistingPlayer(snowflake.MustParse(guildId))
+	if player == nil {
+		return ""
+	}
+
+	channelId := player.ChannelID().String()
+
+	return channelId
+}
+
 func PlayOnStartupFromSourceForGuild(guildId string, session *discordgo.Session, client disgolink.Client, queues *QueueManager, designatedChannelId string, url string, repeatCount int) error {
 
 	playlistUrl := url
