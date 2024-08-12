@@ -35,4 +35,5 @@ application.prod.yml.out
 .prod.env.out
 __backups/
 internal/lavalink/
+lavalink/
 .DS_Store

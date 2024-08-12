@@ -9,15 +9,11 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 # Copy rest of source code files
-# TODO: Only copy required files
 COPY . ./
-COPY ./cmd/radio-service/.env ./.env
+COPY ./.env ./.env
 
 # Build project
-RUN CGO_ENABLED=0 GOOS=linux go build -o build/main ./internal/bot
-
-# Other configs
-VOLUME /app/logs
+RUN CGO_ENABLED=0 GOOS=linux go build -o build/main ./src/cmd
 
 # Run the Discord bot service application
 CMD sh -c "./build/main"

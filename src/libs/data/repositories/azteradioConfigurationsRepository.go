@@ -3,13 +3,14 @@ package repositories
 import (
 	"fmt"
 
-	"github.com/AzteBot-Developments/AzteMusic/internal/data/models/dax"
+	"github.com/AzteBot-Developments/AzteMusic/src/libs/data/models/dax"
 )
 
 type AzteradioConfigurationsDataRepository interface {
 	GetAll() ([]dax.AzteradioConfiguration, error)
 	GetConfiguration(guildId string) (*dax.AzteradioConfiguration, error)
 	SaveConfiguration(config dax.AzteradioConfiguration) error
+	UpdateConfiguration(config dax.AzteradioConfiguration) error
 	RemoveConfiguration(guildId string) error
 }
 

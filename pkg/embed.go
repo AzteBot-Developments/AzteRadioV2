@@ -1,4 +1,4 @@
-package shared
+package pkg
 
 import "github.com/bwmarrin/discordgo"
 

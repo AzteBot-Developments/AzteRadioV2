@@ -1,9 +1,9 @@
-package main
+package bot
 
 import (
 	"context"
-	"fmt"
 	"log"
+	"regexp"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -12,7 +12,10 @@ import (
 	"github.com/disgoorg/snowflake/v2"
 )
 
-func (b *Bot) GetCurrentTrack(guildId string) (*lavalink.Track, disgolink.Player) {
+var urlPattern = regexp.MustCompile("^https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]?")
+var searchPattern = regexp.MustCompile(`^(.{2})search:(.+)`)
+
+func (b *Bot) GetCurrentTrackForGuild(guildId string) (*lavalink.Track, disgolink.Player) {
 	player := b.Lavalink.ExistingPlayer(snowflake.MustParse(guildId))
 	if player == nil {
 		return nil, nil
@@ -54,6 +57,17 @@ func (b *Bot) AddToQueueFromSource(guildId string, url string, repeatCount int) 
 		nil,
 		nil,
 	))
+}
+
+func ServiceIsPlayingTrackForGuild(b *Bot, guildId string) bool {
+	player := b.Lavalink.ExistingPlayer(snowflake.MustParse(guildId))
+	if player == nil {
+		return false
+	}
+
+	track := player.Track()
+
+	return track != nil
 }
 
 // Plays a YT track or playlist from the given source URL.
@@ -120,55 +134,4 @@ func (b *Bot) PlayOnStartupFromSource(guildId string, channelId string, event *d
 	}
 
 	return player.Update(context.TODO(), lavalink.WithTrack(*toPlay))
-}
-
-func ServiceIsPlayingTrack(b *Bot, guildId string) bool {
-	player := b.Lavalink.ExistingPlayer(snowflake.MustParse(guildId))
-	if player == nil {
-		return false
-	}
-
-	track := player.Track()
-
-	return track != nil
-}
-
-func ClientPlayerIsPlayingTrack(l disgolink.Client, guildId string) bool {
-	player := l.ExistingPlayer(snowflake.MustParse(guildId))
-	if player == nil {
-		return false
-	}
-
-	track := player.Track()
-
-	return track != nil
-}
-
-func MemberIsAdmin(guildId string, s *discordgo.Session, i discordgo.Interaction, m discordgo.Member) bool {
-
-	hasAdminPermissions := false
-
-	for _, roleID := range m.Roles {
-		role, err := s.State.Role(guildId, roleID)
-		if err != nil {
-			fmt.Printf("An error ocurred while retrieving role from Discord: %v\n", err)
-			continue
-		}
-
-		if role.Permissions&discordgo.PermissionAdministrator != 0 {
-			hasAdminPermissions = true
-			break
-		}
-	}
-
-	// Check if the member has the "Administrator" permission directly (e.g., server owner or other)
-	if i.Member.Permissions&discordgo.PermissionAdministrator != 0 {
-		hasAdminPermissions = true
-	}
-
-	if hasAdminPermissions {
-		return true
-	} else {
-		return false
-	}
 }

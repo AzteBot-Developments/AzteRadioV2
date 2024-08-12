@@ -14,7 +14,7 @@ services:
   lavalink:
     container_name: lavalink
     build:
-      dockerfile: ./internal/lavalink/Dockerfile
+      dockerfile: ./lavalink/Dockerfile
     restart: unless-stopped
     networks:
       - default
@@ -22,9 +22,9 @@ services:
   azteradio:
     container_name: radio-service
     env_file:
-      ./cmd/radio-service/.env
+      ./.env
     build:
-      dockerfile: ./cmd/radio-service/Dockerfile
+      dockerfile: ./Dockerfile
     networks:
       - default
 

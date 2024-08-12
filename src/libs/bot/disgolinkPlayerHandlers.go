@@ -1,26 +1,26 @@
-package main
+package bot
 
 import (
 	"context"
 	"fmt"
 	"log"
 
-	"github.com/AzteBot-Developments/AzteMusic/pkg/shared"
+	"github.com/AzteBot-Developments/AzteMusic/pkg"
 	"github.com/disgoorg/disgolink/v3/disgolink"
 	"github.com/disgoorg/disgolink/v3/lavalink"
 )
 
 func (b *Bot) onPlayerPause(player disgolink.Player, event lavalink.PlayerPauseEvent) {
-	b.Session.UpdateGameStatus(0, StatusText)
+	b.Session.UpdateGameStatus(0, b.Environment.StatusText)
 }
 
 func (b *Bot) onPlayerResume(player disgolink.Player, event lavalink.PlayerResumeEvent) {
-	b.Session.UpdateGameStatus(0, StatusText)
+	b.Session.UpdateGameStatus(0, player.Track().Info.Title)
 }
 
 func (b *Bot) onTrackStart(player disgolink.Player, event lavalink.TrackStartEvent) {
 	guildId := event.GuildID().String()
-	if guildId == DefaultGuildId {
+	if guildId == b.Environment.DefaultGuildId {
 		// Only update the status when the main guild player changes state
 		// in order to simulate some kind of "broadcast"
 		// such that the status matches what the current song on the main station is
@@ -36,19 +36,19 @@ func (b *Bot) onTrackEnd(player disgolink.Player, event lavalink.TrackEndEvent) 
 
 	guildId := event.GuildID().String()
 
-	if guildId == DefaultGuildId {
+	if guildId == b.Environment.DefaultGuildId {
 		// Only update the status when the main guild player changes state
 		// in order to simulate some kind of "broadcast"
 		// such that the status matches what the current song on the main station is
-		b.Session.UpdateGameStatus(0, StatusText)
+		b.Session.UpdateGameStatus(0, b.Environment.StatusText)
 	}
 
 	queue := b.Queues.Get(guildId)
 
 	// in the case of the radio service, we can check here whether the queue is empty
 	// if it is, play form url again
-	if len(queue.Tracks) < 2 && DefaultDesignatedPlaylistUrl != "" {
-		b.AddToQueueFromSource(guildId, DefaultDesignatedPlaylistUrl, 3)
+	if len(queue.Tracks) < 2 && b.Environment.DefaultDesignatedPlaylistUrl != "" {
+		b.AddToQueueFromSource(guildId, b.Environment.DefaultDesignatedPlaylistUrl, 3)
 	}
 
 	var (
@@ -56,21 +56,21 @@ func (b *Bot) onTrackEnd(player disgolink.Player, event lavalink.TrackEndEvent) 
 		ok        bool
 	)
 	switch queue.Type {
-	case shared.QueueTypeNormal:
+	case pkg.QueueTypeNormal:
 		nextTrack, ok = queue.Next()
 
-	case shared.QueueTypeRepeatTrack:
+	case pkg.QueueTypeRepeatTrack:
 		nextTrack = event.Track
 
-	case shared.QueueTypeRepeatQueue:
+	case pkg.QueueTypeRepeatQueue:
 		queue.Add(event.Track)
 		nextTrack, ok = queue.Next()
 	}
 
 	if !ok {
 		// retry to play designated playlist
-		if DefaultDesignatedPlaylistUrl != "" {
-			b.AddToQueueFromSource(guildId, DefaultDesignatedPlaylistUrl, 3)
+		if b.Environment.DefaultDesignatedPlaylistUrl != "" {
+			b.AddToQueueFromSource(guildId, b.Environment.DefaultDesignatedPlaylistUrl, 3)
 		} else {
 			// No tracks on the queue, or could not play next, so can safely disconnect from the VC to save resources.
 			if err := b.Session.ChannelVoiceJoinManual(guildId, "", false, false); err != nil {
@@ -87,20 +87,20 @@ func (b *Bot) onTrackEnd(player disgolink.Player, event lavalink.TrackEndEvent) 
 
 func (b *Bot) onTrackException(player disgolink.Player, event lavalink.TrackExceptionEvent) {
 	fmt.Printf("onTrackException: %v\n", event)
-	b.Session.UpdateGameStatus(0, StatusText)
+	b.Session.UpdateGameStatus(0, b.Environment.StatusText)
 }
 
 func (b *Bot) onTrackStuck(player disgolink.Player, event lavalink.TrackStuckEvent) {
 	fmt.Printf("onTrackStuck: %v\n", event)
-	b.Session.UpdateGameStatus(0, StatusText)
+	b.Session.UpdateGameStatus(0, b.Environment.StatusText)
 }
 
 func (b *Bot) onWebSocketClosed(player disgolink.Player, event lavalink.WebSocketClosedEvent) {
 	fmt.Printf("onWebSocketClosed: %v\n", event)
-	b.Session.UpdateGameStatus(0, StatusText)
+	b.Session.UpdateGameStatus(0, b.Environment.StatusText)
 }
 
 func (b *Bot) onUnknownEvent(player disgolink.Player, event lavalink.UnknownEvent) {
 	fmt.Printf("onWebSocketClosed: %v\n", event)
-	b.Session.UpdateGameStatus(0, StatusText)
+	b.Session.UpdateGameStatus(0, b.Environment.StatusText)
 }

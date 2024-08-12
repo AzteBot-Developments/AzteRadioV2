@@ -1,12 +1,12 @@
-package main
+package bot
 
 import (
 	"fmt"
 
+	"github.com/AzteBot-Developments/AzteMusic/pkg"
+	"github.com/AzteBot-Developments/AzteMusic/src/libs/commands"
 	"github.com/bwmarrin/discordgo"
 	"github.com/disgoorg/snowflake/v2"
-
-	"github.com/AzteBot-Developments/AzteMusic/pkg/shared"
 )
 
 func (b *Bot) queue(event *discordgo.InteractionCreate, data discordgo.ApplicationCommandInteractionData) error {
@@ -36,14 +36,14 @@ func (b *Bot) queue(event *discordgo.InteractionCreate, data discordgo.Applicati
 	}
 
 	// Get current track playing and add to embed
-	currentTrack, player := b.GetCurrentTrack(event.GuildID)
+	currentTrack, player := b.GetCurrentTrackForGuild(event.GuildID)
 
 	// Build embed response for the queue response
-	embed := shared.NewEmbed().
-		SetTitle(fmt.Sprintf("🎵  Queue - %s", BotName)).
+	embed := pkg.NewEmbed().
+		SetTitle(fmt.Sprintf("🎵  Queue - %s", b.Environment.BotName)).
 		SetDescription(
 			fmt.Sprintf(
-				"Currently playing `%s` (%s) at %s / %s.\n\nQueue Duration: %s\nThere are %d other songs in this queue.\nThe first %d tracks in the queue can be seen below.", currentTrack.Info.Title, *currentTrack.Info.URI, shared.FormatPosition(player.Position()), shared.FormatPosition(currentTrack.Info.Length), shared.FormatDuration(totalDurationSec), len(queue.Tracks), 10)).
+				"Currently playing `%s` (%s) at %s / %s.\n\nQueue Duration: %s\nThere are %d other songs in this queue.\nThe first %d tracks in the queue can be seen below.", currentTrack.Info.Title, *currentTrack.Info.URI, pkg.FormatPosition(player.Position()), pkg.FormatPosition(currentTrack.Info.Length), pkg.FormatDuration(totalDurationSec), len(queue.Tracks), 10)).
 		SetThumbnail(*currentTrack.Info.ArtworkURL).
 		SetColor(000000)
 
@@ -86,10 +86,10 @@ func (b *Bot) nowPlaying(event *discordgo.InteractionCreate, data discordgo.Appl
 		})
 	}
 
-	embed := shared.NewEmbed().
+	embed := pkg.NewEmbed().
 		SetTitle("🎵  Now Playing").
 		SetDescription(
-			fmt.Sprintf("`%s` (%s).\n%s / %s", track.Info.Title, *track.Info.URI, shared.FormatPosition(player.Position()), shared.FormatPosition(track.Info.Length))).
+			fmt.Sprintf("`%s` (%s).\n%s / %s", track.Info.Title, *track.Info.URI, pkg.FormatPosition(player.Position()), pkg.FormatPosition(track.Info.Length))).
 		SetThumbnail(*track.Info.ArtworkURL).
 		SetColor(000000)
 
@@ -103,14 +103,14 @@ func (b *Bot) nowPlaying(event *discordgo.InteractionCreate, data discordgo.Appl
 
 func (b *Bot) help(event *discordgo.InteractionCreate, data discordgo.ApplicationCommandInteractionData) error {
 
-	embed := shared.NewEmbed().
-		SetTitle(fmt.Sprintf("🎵  `%s` Guide", BotName)).
-		SetDescription(fmt.Sprintf("The AzteRadio is a music app which automatically plays the Azteca Essentials playlist on your Discord server, and all it needs is a voice channel that the bot can join and then it'll sort out the rest!\n\nThe available slash commands for `%s` can be seen below.", BotName)).
+	embed := pkg.NewEmbed().
+		SetTitle(fmt.Sprintf("🎵  `%s` Guide", b.Environment.BotName)).
+		SetDescription(fmt.Sprintf("The AzteRadio is a music app which automatically plays the Azteca Essentials playlist on your Discord server, and all it needs is a voice channel that the bot can join and then it'll sort out the rest!\n\nThe available slash commands for `%s` can be seen below.", b.Environment.BotName)).
 		SetThumbnail("https://i.postimg.cc/262tK7VW/148c9120-e0f0-4ed5-8965-eaa7c59cc9f2-2.jpg").
 		SetColor(000000)
 
 	// Build a list of discordgo embed fields out of the available slash commands
-	for _, command := range Commands {
+	for _, command := range commands.Commands {
 
 		text := command.Description
 		title := fmt.Sprintf("`/%s`", command.Name)
@@ -131,7 +131,7 @@ func (b *Bot) help(event *discordgo.InteractionCreate, data discordgo.Applicatio
 	}
 
 	embed.AddLineBreakField()
-	embed.AddField(fmt.Sprintf("Configuring the `%s`", BotName), "\n\nIn order to configure your bot to automatically play Azteca's Essentials on one of your voice channels, you'll have to run the `/radio-set-cfg` slash command.", false)
+	embed.AddField(fmt.Sprintf("Configuring the `%s`", b.Environment.BotName), "\n\nIn order to configure your bot to automatically play Azteca's Essentials on one of your voice channels, you'll have to run the `/radio-set-cfg` slash command.", false)
 
 	return b.Session.InteractionRespond(event.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,

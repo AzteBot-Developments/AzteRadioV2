@@ -11,8 +11,7 @@ on:
       - '.gitmodules'
       - 'docker-compose.yml'
       - 'Makefile'
-      - 'cmd/lavalink-service/**'
-      - 'internal/lavalink/**'
+      - 'lavalink/**'
     branches: [ 'main' ]
 
   workflow_dispatch:
@@ -49,7 +48,7 @@ jobs:
           AZTERADIO_CONFIG_ENCODED: ${{ secrets.AZTERADIO_CONFIG_ENCODED }}
         run: |
           : # Environment variables for all the music services
-          echo ${{ env.AZTERADIO_CONFIG_ENCODED }} | base64 --decode > cmd/radio-service/.env
+          echo ${{ env.AZTERADIO_CONFIG_ENCODED }} | base64 --decode > .env
 
       - name: Generate SHA output
         id: vars
@@ -75,7 +74,7 @@ jobs:
       - name: 'Docker build'
         run: |
           : # Build radio services
-          docker build --tag "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTERADIO_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" -f cmd/radio-service/Dockerfile .
+          docker build --tag "${{ env.GKE_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.DOCKER_ARTIFACT_REPOSITORY }}/${{ env.AZTERADIO_IMAGE }}:${{ steps.vars.outputs.GITHUB_SHA }}" .
 
       - name: 'Docker push'
         run: |
