@@ -12,6 +12,8 @@ import (
 
 	"github.com/AzteBot-Developments/AzteMusic/src/libs/bot"
 	"github.com/AzteBot-Developments/AzteMusic/src/libs/config"
+
+	_ "github.com/joho/godotenv/autoload"
 )
 
 var LavalinkUseSecure, _ = strconv.ParseBool(os.Getenv("LAVALINK_NODE_SECURE"))
@@ -30,7 +32,8 @@ var Bot = bot.NewBot(
 		NodeAddress:                      os.Getenv("LAVALINK_NODE_ADDRESS"),
 		NodePassword:                     os.Getenv("LAVALINK_NODE_PASSWORD"),
 		NodeSecure:                       LavalinkUseSecure,
-	})
+	},
+)
 
 func main() {
 

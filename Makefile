@@ -15,4 +15,4 @@ down:
 	docker compose down -v
 
 update-env:
-	openssl base64 -A -in cmd/radio-service/.prod.env -out cmd/radio-service/.prod.env.out
+	openssl base64 -A -in .prod.env -out .prod.env.out
