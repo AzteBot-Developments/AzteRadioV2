@@ -17,11 +17,14 @@ import (
 var (
 	_ = godotenv.Load(".env")
 
+	// Environment configurations
 	urlPattern    = regexp.MustCompile("^https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]?")
 	searchPattern = regexp.MustCompile(`^(.{2})search:(.+)`)
 
 	Token    = os.Getenv("BOT_TOKEN")
 	BotAppId = os.Getenv("BOT_APP_ID")
+
+	MySqlAztebotRootConnectionString = os.Getenv("DB_AZTEBOT_ROOT_CONNSTRING")
 
 	DefaultGuildId             = os.Getenv("GUILD_ID")
 	DefaultDesignatedChannelId = os.Getenv("DESIGNATED_VOICE_CHANNEL_ID")
@@ -31,11 +34,10 @@ var (
 	DefaultDesignatedPlaylistUrl = os.Getenv("DESIGNATED_PLAYLIST_URL")
 	StatusText                   = os.Getenv("STATUS_TEXT")
 
-	MySqlAztebotRootConnectionString = os.Getenv("DB_AZTEBOT_ROOT_CONNSTRING")
-
-	AzteradioConfigurationRepository = repositories.NewAzteradioConfigurationRepository(MySqlAztebotRootConnectionString)
-
 	RestrictedCommands = strings.Split(os.Getenv("RESTRICTED_COMMANDS"), ",")
+
+	// Service and repository dependencies
+	AzteradioConfigurationRepository = repositories.NewAzteradioConfigurationRepository(MySqlAztebotRootConnectionString)
 
 	b = NewBot()
 )

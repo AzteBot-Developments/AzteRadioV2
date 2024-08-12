@@ -6,8 +6,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/disgoorg/snowflake/v2"
 
-	"github.com/disgoorg/disgolink/v3/lavalink"
-
 	"github.com/AzteBot-Developments/AzteMusic/pkg/shared"
 )
 
@@ -45,7 +43,7 @@ func (b *Bot) queue(event *discordgo.InteractionCreate, data discordgo.Applicati
 		SetTitle(fmt.Sprintf("🎵  Queue - %s", BotName)).
 		SetDescription(
 			fmt.Sprintf(
-				"Currently playing `%s` (%s) at %s / %s.\n\nQueue Duration: %s\nThere are %d other songs in this queue.\nThe first %d tracks in the queue can be seen below.", currentTrack.Info.Title, *currentTrack.Info.URI, formatPosition(player.Position()), formatPosition(currentTrack.Info.Length), shared.FormatDuration(totalDurationSec), len(queue.Tracks), 10)).
+				"Currently playing `%s` (%s) at %s / %s.\n\nQueue Duration: %s\nThere are %d other songs in this queue.\nThe first %d tracks in the queue can be seen below.", currentTrack.Info.Title, *currentTrack.Info.URI, shared.FormatPosition(player.Position()), shared.FormatPosition(currentTrack.Info.Length), shared.FormatDuration(totalDurationSec), len(queue.Tracks), 10)).
 		SetThumbnail(*currentTrack.Info.ArtworkURL).
 		SetColor(000000)
 
@@ -91,7 +89,7 @@ func (b *Bot) nowPlaying(event *discordgo.InteractionCreate, data discordgo.Appl
 	embed := shared.NewEmbed().
 		SetTitle("🎵  Now Playing").
 		SetDescription(
-			fmt.Sprintf("`%s` (%s).\n%s / %s", track.Info.Title, *track.Info.URI, formatPosition(player.Position()), formatPosition(track.Info.Length))).
+			fmt.Sprintf("`%s` (%s).\n%s / %s", track.Info.Title, *track.Info.URI, shared.FormatPosition(player.Position()), shared.FormatPosition(track.Info.Length))).
 		SetThumbnail(*track.Info.ArtworkURL).
 		SetColor(000000)
 
@@ -101,13 +99,6 @@ func (b *Bot) nowPlaying(event *discordgo.InteractionCreate, data discordgo.Appl
 			Embeds: []*discordgo.MessageEmbed{embed.MessageEmbed},
 		},
 	})
-}
-
-func formatPosition(position lavalink.Duration) string {
-	if position == 0 {
-		return "0:00"
-	}
-	return fmt.Sprintf("%d:%02d", position.Minutes(), position.SecondsPart())
 }
 
 func (b *Bot) help(event *discordgo.InteractionCreate, data discordgo.ApplicationCommandInteractionData) error {

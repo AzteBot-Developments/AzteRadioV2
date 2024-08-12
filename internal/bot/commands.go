@@ -1,6 +1,9 @@
 package main
 
 import (
+	"log"
+
+	"github.com/AzteBot-Developments/AzteMusic/pkg/shared"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -70,4 +73,40 @@ func (b *Bot) RegisterCommands() {
 
 func (b *Bot) RegisterCommandsForGuild(guildId string) {
 	go b.Session.ApplicationCommandBulkOverwrite(b.Session.State.User.ID, guildId, Commands)
+}
+
+// GENERIC InteractionCreate HANDLER
+func (b *Bot) onApplicationCommand(session *discordgo.Session, event *discordgo.InteractionCreate) {
+
+	data := event.ApplicationCommandData()
+
+	// If allowed roles are configured, only allow a user with one of these roles to execute an app command
+	// The app commands which require role permissions are defined here
+	if shared.StringInSlice(data.Name, RestrictedCommands) {
+		if event.Type == discordgo.InteractionApplicationCommand {
+			// Check if the user has the allowed role
+			hasAllowedRole := MemberIsAdmin(event.GuildID, session, *event.Interaction, *event.Member)
+
+			if !hasAllowedRole {
+				// If the user doesn't have the allowed role, send a response
+				session.InteractionRespond(event.Interaction, &discordgo.InteractionResponse{
+					Type: discordgo.InteractionResponseChannelMessageWithSource,
+					Data: &discordgo.InteractionResponseData{
+						Content: "You do not have the required role to use this command.",
+					},
+				})
+				return
+			}
+		}
+	}
+
+	handler, ok := b.Handlers[data.Name]
+	if !ok {
+		log.Println("unknown command: ", data.Name)
+		return
+	}
+	if err := handler(event, data); err != nil {
+		log.Printf("error ocurred for %s: %v\n", data.Name, err)
+		return
+	}
 }

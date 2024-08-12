@@ -30,9 +30,6 @@ func (b *Bot) handleSlashSetRadioConfig(i *discordgo.InteractionCreate, data dis
 				})
 			}
 
-			// Saved configuration, update player
-			// TODO
-
 			return b.Session.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
 				Data: &discordgo.InteractionResponseData{
@@ -54,9 +51,6 @@ func (b *Bot) handleSlashSetRadioConfig(i *discordgo.InteractionCreate, data dis
 				},
 			})
 		}
-
-		// Saved configuration, update player
-		// TODO
 
 		return b.Session.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,

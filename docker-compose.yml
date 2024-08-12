@@ -25,8 +25,6 @@ services:
       ./cmd/radio-service/.env
     build:
       dockerfile: ./cmd/radio-service/Dockerfile
-    volumes: 
-      - "./logs/radio-service:/app/logs"
     networks:
       - default
 

@@ -37,7 +37,7 @@ func PlayerCurrentChannelId(l disgolink.Client, guildId string) string {
 	return channelId
 }
 
-func PlayOnStartupFromSourceForGuild(guildId string, session *discordgo.Session, client disgolink.Client, queues *QueueManager, designatedChannelId string, url string, repeatCount int, shuffle bool) error {
+func PlayFromUrlForGuildChannelById(guildId string, session *discordgo.Session, client disgolink.Client, queues *QueueManager, designatedChannelId string, url string, repeatCount int, shuffle bool) error {
 
 	playlistUrl := url
 

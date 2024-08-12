@@ -49,7 +49,7 @@ func syncRadioStates(repo repositories.AzteradioConfigurationsDataRepository, s 
 				if !shared.ClientPlayerIsPlayingTrack(client, config.GuildId) || (shared.PlayerCurrentChannelId(client, config.GuildId) != config.DefaultRadioChannelId) {
 					// If the radio is not playing on the guild
 					// or if it's playing on a channel different to the assigned one
-					if err := shared.PlayOnStartupFromSourceForGuild(config.GuildId, s, client, queues, config.DefaultRadioChannelId, defaultDesignatedPlaylistUrl, repeatPlaylistCount, shuffle); err != nil {
+					if err := shared.PlayFromUrlForGuildChannelById(config.GuildId, s, client, queues, config.DefaultRadioChannelId, defaultDesignatedPlaylistUrl, repeatPlaylistCount, shuffle); err != nil {
 						log.Fatalf("Could not play default radio playlist on channel (%s) for guild %s (onReady CRON): %v", config.DefaultRadioChannelId, config.GuildId, err)
 					}
 				}
