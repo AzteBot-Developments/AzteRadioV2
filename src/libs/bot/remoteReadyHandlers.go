@@ -13,7 +13,7 @@ func (b *Bot) OnReady(s *discordgo.Session, event *discordgo.Ready) {
 
 	// Params
 	const repeatPlaylistCount int = 2
-	const syncRadioStatesFrequency int = 120
+	const syncRadioStatesFrequency int = 100
 
 	// Initial lavalink setup unless it was setup already
 	if !b.HasLavaLinkClient {
