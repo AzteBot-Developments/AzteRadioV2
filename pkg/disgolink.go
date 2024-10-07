@@ -32,9 +32,12 @@ func PlayerCurrentChannelId(l disgolink.Client, guildId string) string {
 		return ""
 	}
 
-	channelId := player.ChannelID().String()
+	optChannelId := player.ChannelID()
+	if optChannelId == nil {
+		return ""
+	}
 
-	return channelId
+	return optChannelId.String()
 }
 
 func PlayFromUrlForGuildChannelById(guildId string, session *discordgo.Session, client disgolink.Client, queues *QueueManager, designatedChannelId string, url string, repeatCount int, shuffle bool) error {
