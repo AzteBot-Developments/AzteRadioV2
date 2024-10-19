@@ -8,7 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-// Called once the Discord servers confirm a succesful connection.
+// Called once the Discord servers confirm a succesful connection
 func (b *Bot) OnReady(s *discordgo.Session, event *discordgo.Ready) {
 
 	// Params
